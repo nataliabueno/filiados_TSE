@@ -9,7 +9,7 @@ library(tidyverse)
 
 #Helpful functions
 
-#Downloading
+#Downloading function
 party_affiliates <-function(party, uf, url, dfolder)
 {    
   try(download.file(url=paste0(url, tolower(party),"_",tolower(uf),".zip"),
@@ -20,9 +20,7 @@ party_affiliates <-function(party, uf, url, dfolder)
                     exdir=paste0(dfolder, toupper(party),"/",toupper(uf), "/")))
 }
 
-#Binding
-ufs_downloaded <- list.files(paste0(dfolder, party))
-
+#Binding function
 parties <- function(ufs_downloaded, parties_downloaded){
   br <- locale("es", encoding = "windows-1252") 
   #this avoids encoding errors and it depends on your machine/R setup
@@ -67,7 +65,8 @@ for (j in 1:length(parties)){
 }
 
 #Binding all party affiliates
-filiados <- parties(ufs_downloaded, parties_downloaded)[[1]]
-sobjudice <- parties(ufs_downloaded, parties_downloaded)[[2]]
+dfolder <- "~/Desktop/"
+filiados <- parties(ufs_downloaded=list.files("~/Desktop/DEM/"), parties_downloaded="DEM")[[1]]
+sobjudice <- parties(ufs_downloaded=list.files("~/Desktop/DEM/"), parties_downloaded="DEM")[[2]]
 
 
