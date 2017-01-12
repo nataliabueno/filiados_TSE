@@ -21,29 +21,23 @@ party_affiliates <-function(party, uf, url, dfolder)
 }
 
 #Binding
-parties <- function(party, uf, files){
-  br <- locale("es", encoding = "windows-1252")
-  if (paste0("filiados_", tolower(party), "_", tolower(uf), ".csv")) %in% 
-             list.files(paste0(dfolder ,toupper(party),"/",
-             toupper(uf),"/", "aplic/sead/lista_filiados/uf/"))==TRUE){                                                             
-      
-    temp_sj <- read.csv(file=paste0(dfolder,
-                        toupper(party),"/", toupper(uf),"/", 
-                        "aplic/sead/lista_filiados/uf/fil_sub_jud_", 
-                         tolower(party),"_", tolower(uf), ".csv"), sep=";", 
-                         fileEncoding="windows-1252", stringsAsFactors = F,
-                         header=T)
-  ja <- locale("es", encoding = "windows-1252")
-  tt <-  read_csv2(file=paste0(dfolder,
-                         toupper(party),"/", toupper(uf),"/", 
-                         "aplic/sead/lista_filiados/uf/filiados_", 
-                         tolower(party),"_", tolower(uf), ".csv"), locale=ja)
-   str(tt)
-    
-  }else{
-  missing[j] <-  print(paste(partidos[j], UFs[i]))
-  }
-  return(list(temp, temp_sj, missing))
+ufs_downloaded <- list.files(paste0(dfolder, party))
+
+parties <- function(ufs_downloaded, parties_downloaded){
+  br <- locale("es", encoding = "windows-1252") 
+  #this avoids encoding errors and it depends on your machine/R setup
+  
+  paths_judice <- as.list(paste0(dfolder, toupper(parties_downloaded),"/", toupper(ufs_downloaded),"/", 
+                  "aplic/sead/lista_filiados/uf/fil_sub_jud_", tolower(parties_downloaded),
+                  "_", tolower(ufs_downloaded), ".csv"))
+  paths_filiados <- as.list(paste0(dfolder, toupper(parties_downloaded),"/", toupper(ufs_downloaded),"/", 
+                         "aplic/sead/lista_filiados/uf/filiados_", tolower(parties_downloaded),
+                         "_", tolower(ufs_downloaded), ".csv"))
+
+  all_parties_allstates_filiados <- lapply(paths_filiados, read_csv2, locale=br) %>% bind_rows()
+  all_parties_allstates_sobjudice <- lapply(paths_judice, read_csv2, locale=br) %>% bind_rows()
+
+  return(list(all_parties_allstates_filiados, all_parties_allstates_sobjudice))
 }
 
 ####################Downloading
@@ -65,32 +59,15 @@ parties <- c("PMDB", "PTB", "PDT", "PT", "DEM",
               "PROS", "SD") #check if list is complete
 
 
-#Getting all states per party
+#Downloading all states per party
 for (j in 1:length(parties)){
   for(i in 1:length(UFs)){
     party_affiliates(party=parties[j], uf=UFs[i], url=URL, dfolder=folder)
   }
 }
 
-#Binding
-for (j in 1:length(partidos)){
-  all <- list()
-  for(i in 1:length(UFs)){
-    temp <- partido_brasil(partidos[j], UFs[i])
-    all[[i]] <- temp
-  }  
-  
-  all_partido <- do.call(rbind.data.frame, all) #bind_rows
-  save(all_partido, file=paste("~/Dropbox/MCMV_data/filiados_122016/all_", partidos[j],".Rda", sep=""))
-  print(j)
-}
+#Binding all party affiliates
+filiados <- parties(ufs_downloaded, parties_downloaded)[[1]]
+sobjudice <- parties(ufs_downloaded, parties_downloaded)[[2]]
 
-all_parties_countryf <- do.call(rbind.data.frame, all_parties_country)
-#save(all_parties_countryf, file="~/Dropbox/MCMV_data/filiados_122016/all_parties_country.Rda")
-temp <- read.csv(file=paste0(dfolder,
-                             toupper(party),"/", toupper(uf),"/", 
-                             "aplic/sead/lista_filiados/uf/filiados_", 
-                             tolower(party),"_", tolower(uf), ".csv"), sep=";", 
-                 fileEncoding="windows-1252", stringsAsFactors = F,
-                 header=T)
 
