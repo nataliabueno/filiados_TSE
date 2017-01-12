@@ -1,5 +1,5 @@
 ############# Downloading Filiados Data 
-############# 01/10/2017
+############# 01/12/2017
 
 #Preambule
 #R Version 3.3.2
@@ -50,18 +50,18 @@ ufs <- c("AC", "AL","AP","AM", "BA",
          "MG","PA","PB","PR","PE","PI","RJ",
          "RN","RS","RO","RR","SC","SP", "SE","TO")
 
-parties <- c("PMDB", "PTB", "PDT", "PT", "DEM",
+pparties <- c("PMDB", "PTB", "PDT", "PT", "DEM",
               "PC_do_B", "PSB", "PSDB", "PTC", "PSC", 
               "PMN", "PRP", "PPS", "PV", "PT_do_B",
               "PP", "PSTU", "PCB", "PRTB", "PHS", 
               "PSDC", "PCO", "PTN", "PSL", "PRB", 
               "PSOL", "PR", "PSD", "PPL", "PEN", 
-              "PROS", "SD", "NOVO", "PMB", "REDE") #update list as needed
+              "PROS", "SD", "NOVO", "PMB", "REDE") #update list as needed #check here: http://www.tse.jus.br/partidos/partidos-politicos/registrados-no-tse
 
 
 #Downloading all states per party
 for (j in 1:length(pparties)){
-  for(i in 1:length(UFs)){
+  for(i in 1:length(ufs)){
     party_affiliates(party=pparties[j], uf=ufs[i], url=url, dfolder=dfolder)
   }
 }
