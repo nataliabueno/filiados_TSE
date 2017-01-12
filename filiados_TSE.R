@@ -44,21 +44,19 @@ parties <- function(ufs_downloaded, parties_downloaded, sobjudice=F){
 #Downloading UFs
 url <- "http://agencia.tse.jus.br/estatistica/sead/eleitorado/filiados/uf/filiados_"
 dfolder <- "~/Dropbox/TSE_FILIACAO/Jan_2017/"
-ufs <- c("AC", "AL")
 
+ufs <- c("AC", "AL","AP","AM", "BA",
+         "CE","DF","ES", "GO","MA","MT","MS",
+         "MG","PA","PB","PR","PE","PI","RJ",
+         "RN","RS","RO","RR","SC","SP", "SE","TO")
 
-#UFs <- c("AC", "AL","AP","AM", "BA",
-#         "CE","DF","ES", "GO","MA","MT","MS",
-#         "MG","PA","PB","PR","PE","PI","RJ",
-#         "RN","RS","RO","RR","SC","SP", "SE","TO")
-
-#parties <- c("PMDB", "PTB", "PDT", "PT", "DEM",
-#              "PC_do_B", "PSB", "PSDB", "PTC", "PSC", 
-#              "PMN", "PRP", "PPS", "PV", "PT_do_B",
-#              "PP", "PSTU", "PCB", "PRTB", "PHS", 
-#              "PSDC", "PCO", "PTN", "PSL", "PRB", 
-#              "PSOL", "PR", "PSD", "PPL", "PEN", 
-#              "PROS", "SD", "NOVO", "PMB", "REDE") #update list as needed
+parties <- c("PMDB", "PTB", "PDT", "PT", "DEM",
+              "PC_do_B", "PSB", "PSDB", "PTC", "PSC", 
+              "PMN", "PRP", "PPS", "PV", "PT_do_B",
+              "PP", "PSTU", "PCB", "PRTB", "PHS", 
+              "PSDC", "PCO", "PTN", "PSL", "PRB", 
+              "PSOL", "PR", "PSD", "PPL", "PEN", 
+              "PROS", "SD", "NOVO", "PMB", "REDE") #update list as needed
 
 
 #Downloading all states per party
@@ -75,7 +73,7 @@ length(list.files(paste0(dfolder, "original_files/")))==length(pparties)*length(
 length(list.files(paste0(dfolder, "original_unzipped/")))==length(pparties)
 
 #Binding all party affiliates
-pparties <- c("PTB", "PDT") #update list as needed
+#Binding filiados
 all <- list()
 for (p in 1:length(pparties)){
     all[[p]] <-    parties(ufs_downloaded=list.files(paste0(dfolder, "original_unzipped/", pparties[p])),
@@ -83,7 +81,22 @@ for (p in 1:length(pparties)){
 }
 filiados_jan2017 <- bind_rows(all, .id = "all")
 
+#Binding sobjudice
+all_sobj <- list()
+for (p in 1:length(pparties)){
+  all_sobj[[p]] <-    parties(ufs_downloaded=list.files(paste0(dfolder, "original_unzipped/", pparties[p])),
+                         parties_downloaded=pparties[p], sobjudice = T) 
+}
+sobjudice_jan2017 <- bind_rows(all_sobj, .id = "all")
 
-
+#Basic checks on number of states and number of parties
+#1. Number of states
+length(table(filiados_jan2017$UF))==length(ufs)
+#2. Number of parties
+length(table(filiados_jan2017$UF))==length(pparties)
+#3. Any state without any party affiliates for any political party? (smell check)
+filiados_jan2017 %>% group_by(`SIGLA DO PARTIDO`, UF) %>% summarize(n_obs = n())
+#if so, which state(s) and which party (ies)?
+filiados_jan2017 %>% group_by(`SIGLA DO PARTIDO`, UF) %>% summarize(n_obs = n()) %>% filter(n_obs == 0)
 
 
