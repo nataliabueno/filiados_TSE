@@ -47,8 +47,6 @@ parties <- function(ufs_downloaded, parties_downloaded, sobjudice=F){
   return(party_allstates)
 }
 
-
-
 ####################Downloading
 #Downloading UFs
 url <- "http://agencia.tse.jus.br/estatistica/sead/eleitorado/filiados/uf/filiados_"
