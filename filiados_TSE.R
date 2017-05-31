@@ -111,3 +111,5 @@ filiados_jan2017 %>% group_by(`SIGLA DO PARTIDO`, UF) %>% summarize(n_obs = n())
 
 save(filiados_jan2017, file=paste0(dfolder, "combined_data/filiados_jan2017.Rda"))
 save(sobjudice_jan2017, file=paste0(dfolder, "combined_data/sobjudice_jan2017_tobecorrected.Rda"))
+write.csv(filiados_jan2017, file = paste0(dfolder, "combined_data/filiados_jan2017.csv"), fileEncoding = "UTF-8")
+
