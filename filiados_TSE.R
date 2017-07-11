@@ -1,6 +1,13 @@
 ############# Downloading Filiados Data 
 ############# 01/12/2017
 
+# Downloads data
+# Binds data
+# Adds TSE and IBGE Codes
+
+#############
+#############
+
 #Preambule
 #R Version 3.3.2
 rm(list=ls())
@@ -113,3 +120,12 @@ save(filiados_jan2017, file=paste0(dfolder, "combined_data/filiados_jan2017.Rda"
 save(sobjudice_jan2017, file=paste0(dfolder, "combined_data/sobjudice_jan2017_tobecorrected.Rda"))
 write.csv(filiados_jan2017, file = paste0(dfolder, "combined_data/filiados_jan2017.csv"), fileEncoding = "UTF-8")
 
+############### ADD IBGE CODES TO FILIADOS DATA
+
+codes <- read_excel(paste0(dfolder, "IBGE_TSE_files/Munic2016_IBGE_TSE.xlsx"))
+codes <- codes %>% mutate(TSECod1 = as.numeric(TSECod))
+filiados_jan2017 <- filiados_jan2017 %>% mutate(TSECod1 = as.numeric(`CODIGO DO MUNICIPIO`))
+
+filiados_jan2017 <- filiados_jan2017 %>% left_join(codes, by = "TSECod1") %>% select(-UF.y) %>% rename(UF = UF.x)
+
+save(filiados_jan2017, file=paste0(dfolder, "combined_data/filiados_jan2017_ibge.Rda"))
